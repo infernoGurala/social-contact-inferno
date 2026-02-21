@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>infenro · socials</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141418;
+      --surface2: #1a1a21;
+      --border: rgba(255,255,255,0.07);
+      --accent: #c8f060;
+      --text: #e8e8ec;
+      --muted: #666676;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      overflow-x: hidden;
+    }
+
+    /* Blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%);
+      top: -80px; right: -80px;
+    }
+    .blob-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(96,200,240,0.04) 0%, transparent 70%);
+      bottom: 100px; left: -80px;
+    }
+
+    /* Noise */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Back link */
+    .back {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 48px;
+      transition: color 0.2s;
+    }
+    .back:hover { color: var(--text); }
+
+    /* Profile */
+    .profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .avatar {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(200,240,96,0.15), rgba(96,200,240,0.1));
+      border: 1px solid rgba(200,240,96,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .profile-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: -0.03em;
+    }
+    .profile-name span { color: var(--accent); }
+
+    .profile-bio {
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 300;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    /* Cards */
+    .cards {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.3s, transform 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .card.github::before  { background: linear-gradient(135deg, rgba(255,255,255,0.03), transparent); }
+    .card.telegram::before { background: linear-gradient(135deg, rgba(39,174,245,0.05), transparent); }
+    .card.gmail::before   { background: linear-gradient(135deg, rgba(234,67,53,0.05), transparent); }
+    .card.linkedin::before { background: linear-gradient(135deg, rgba(10,102,194,0.05), transparent); }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: var(--surface2);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card.github:hover  { border-color: rgba(255,255,255,0.15); }
+    .card.telegram:hover { border-color: rgba(39,174,245,0.25); }
+    .card.gmail:hover   { border-color: rgba(234,67,53,0.25); }
+    .card.linkedin:hover { border-color: rgba(10,102,194,0.3); }
+
+    .icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .github  .icon-wrap { background: rgba(255,255,255,0.05); }
+    .telegram .icon-wrap { background: rgba(39,174,245,0.08); border-color: rgba(39,174,245,0.15); }
+    .gmail   .icon-wrap { background: rgba(234,67,53,0.08);  border-color: rgba(234,67,53,0.15); }
+    .linkedin .icon-wrap { background: rgba(10,102,194,0.08); border-color: rgba(10,102,194,0.2); }
+
+    .icon-wrap svg { width: 22px; height: 22px; }
+
+    .card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-platform {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .card-handle {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-chevron {
+      color: var(--muted);
+      transition: transform 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .card:hover .card-chevron {
+      transform: translateX(4px);
+      color: var(--accent);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.5s ease both;
+      opacity: 0;
+    }
+    .footer a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer a span { color: var(--accent); }
+    .footer a:hover { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="container">
+
+    <a href="https://inferalis.space" class="back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      inferalis.space
+    </a>
+
+    <div class="profile">
+      <div class="avatar">👾</div>
+      <h1 class="profile-name">inferalis<span>.space</span></h1>
+      <p class="profile-bio">Productivity forged from chaos. Find me across the internet.</p>
+    </div>
+
+    <div class="cards">
+
+      <!-- GitHub -->
+      <a href="https://github.com/infernoGurala" target="_blank" class="card github">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </div>
+        <div class="card-info">
+          <span class="card-platform">GitHub</span>
+          <span class="card-handle">infernoGurala</span>
+        </div>
+        <svg class="card-chevron" width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- Telegram -->
+      <a href="https://t.me/Inferalis" target="_blank" class="card telegram">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-17.5 7.5a2.25 2.25 0 00.159 4.175l3.895 1.298 1.587 4.952a1 1 0 001.642.44l2.434-2.108 3.863 2.895a2.25 2.25 0 003.453-1.38l2.75-16.5a2.25 2.25 0 00-2.261-2.487zM9.862 15.75l-.63 2.73-.87-2.716 8.038-7.544-6.538 7.53z" fill="#27AEF5"/>
+          </svg>
+        </div>
+        <div class="card-info">
+          <span class="card-platform">Telegram</span>
+          <span class="card-handle">@Inferalis</span>
+        </div>
+        <svg class="card-chevron" width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- Gmail -->
+      <a href="mailto:johnmosesg150@gmail.com" class="card gmail">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" stroke="#EA4335" stroke-width="1.5"/>
+            <path d="M2 6l10 7 10-7" stroke="#EA4335" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-info">
+          <span class="card-platform">Gmail</span>
+          <span class="card-handle">johnmosesg150</span>
+        </div>
+        <svg class="card-chevron" width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/Johnmosesgurala" target="_blank" class="card linkedin">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="#0A66C2">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </div>
+        <div class="card-info">
+          <span class="card-platform">LinkedIn</span>
+          <span class="card-handle">Johnmosesgurala</span>
+        </div>
+        <svg class="card-chevron" width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      <a href="https://inferalis.space">Infernum<span></span></a>
+    </div>
+
+  </div>
+</body>
+</html>
